@@ -21,7 +21,7 @@
 ## Install
 
 This is commercial software: the binary is distributed by the publisher and
-each installation needs a license issued for that server.
+a license is needed for the server users connect to (usually the Iran server).
 
 On each server (Ubuntu/Debian, any architecture):
 
@@ -47,7 +47,11 @@ install -m 0755 cando1-linux-amd64 /usr/local/bin/cando1
 
 ## License
 
-Every server needs its own license, valid for a set period. On the server:
+Only the server users connect to needs a license, valid for a set period:
+the one with the public ports or the VPN gateway, usually the Iran server.
+The other side (abroad) needs none, so it can be replaced at any time, and
+one licensed Iran server can connect to any number of abroad servers. The
+rule follows what a server does, not how it is labelled. On the Iran server:
 
 ```bash
 cando1 id            # prints this server's id, e.g. ASE2-YTWF-TF6R-7WUH
@@ -295,6 +299,20 @@ curl -fsSL https://raw.githubusercontent.com/meran77777/cando1-dist/main/install
 <div dir="rtl">
 
 نصب‌کننده نسخهٔ آمادهٔ برنامه را (با بررسی checksum) دانلود می‌کند، BBR و تنظیمات کم‌تأخیر شبکه را فعال می‌کند و منو را باز می‌کند.
+
+## لایسنس
+
+فقط سروری که کاربران به آن وصل می‌شوند لایسنس می‌خواهد، یعنی سروری که پورت‌ها یا گیت‌وی VPN روی آن است؛ معمولاً **سرور ایران**. سرور خارج لایسنس لازم ندارد، پس هر وقت خواستید عوضش کنید؛ با یک لایسنس ایران به هر تعداد سرور خارج وصل شوید. روی سرور ایران:
+
+</div>
+
+```bash
+cando1 id                      # شناسهٔ سرور برای خرید لایسنس
+cando1 license add CANDO1-...  # نصب لایسنس
+cando1 license                 # وضعیت و تاریخ انقضا
+```
+
+<div dir="rtl">
 
 ## راه‌اندازی تونل در دو قدم
 
