@@ -144,6 +144,25 @@ only; needs `iptables` and `iproute2` on the Iran server (the rules are added
 when the tunnel starts and removed when it stops). Give the VPN a public DNS
 server (for ocserv: `dns = 1.1.1.1`) so name lookups also go abroad.
 
+## Relay (multi-hop)
+
+A relay is a middle server between the two tunnel servers. The server that
+connects (abroad in reverse mode, Iran in direct mode) dials the relay
+instead, and the relay forwards everything, still encrypted, to where it used
+to connect. The censor sees only the relay's address. Relays can be chained:
+abroad → relay → relay → Iran.
+
+1. On the relay server choose **New tunnel → Relay** (or run
+   `cando1 relay <key>`) and paste the key of the server that **connects**.
+2. It prints a new key. On that server delete the old tunnel and import the
+   new key. The other server needs no change.
+
+For another hop, run the relay setup on the next server with the key the
+first relay printed. TLS, the handshake and the multiplexer stay end to end
+between the two tunnel servers: a relay holds no token, sees only encrypted
+traffic and needs no license. TLS, WSS, WS and TCP can be relayed; KCP
+cannot yet.
+
 ## Transports
 
 | | Best for |
@@ -207,6 +226,7 @@ cando1 logs    <name>
 cando1 id                       print this server's id (for a license)
 cando1 license [add <key>]      show or install the license
 cando1 diag   [name]            diagnostics report (see below)
+cando1 relay <key> [--port N]   make this server a relay for that key
 cando1 run <name> | -c <file>   run in the foreground
 cando1 gen-token | version | help
 ```
@@ -349,6 +369,16 @@ cando1 import cando1://eyJtIjoicmV2ZXJzZSIs...
 
 ترافیک به آدرس‌های خصوصی و به خود سرور ایران محلی می‌ماند. فقط لینوکس؛ روی سرور ایران `iptables` و `iproute2` لازم است (قوانین با روشن شدن تونل اضافه و با خاموش شدن حذف می‌شوند). DNS کاربرها را یک DNS عمومی بگذارید (در ocserv: `dns = 1.1.1.1`) تا جست‌وجوی نام‌ها هم از خارج انجام شود.
 
+## رله (چند هاپی)
+
+رله یک سرور واسط بین دو سرور تونل است. سروری که وصل می‌شود (در حالت ریورس سرور خارج، در حالت مستقیم سرور ایران) به‌جای سرور مقصد به رله وصل می‌شود و رله همه‌چیز را، همچنان رمزنگاری‌شده، به مقصد قبلی می‌فرستد. فیلترینگ فقط آدرس رله را می‌بیند. رله‌ها را می‌شود پشت هم گذاشت: خارج ← رله ← رله ← ایران.
+
+۱. روی سرور رله **New tunnel → Relay** را بزنید (یا `cando1 relay <key>`) و کلید سروری را که **وصل می‌شود** بدهید.
+
+۲. یک کلید جدید چاپ می‌شود. روی آن سرور تونل قبلی را حذف و کلید جدید را import کنید. سرور دیگر تغییری لازم ندارد.
+
+برای هاپ بعدی، همین کار را روی سرور بعدی با کلیدی که رله اول چاپ کرده انجام دهید. رمزنگاری، دست‌دهی و مالتی‌پلکس بین دو سرور تونل سرتاسری می‌ماند: رله توکن ندارد، فقط ترافیک رمزشده می‌بیند و لایسنس نمی‌خواهد. TLS، WSS، WS و TCP قابل رله هستند؛ KCP فعلاً نه.
+
 ## ترنسپورت‌ها
 
 - **TLS:** پیش‌فرض؛ دست‌دهی TLS دقیقاً مثل مرورگر. تعادل سرعت و پنهان‌کاری.
@@ -380,6 +410,7 @@ cando1 list                     فهرست تونل‌ها و وضعیت
 cando1 status  <name>           پینگ، لینک‌ها، ترافیک
 cando1 start|stop|restart <name>
 cando1 logs    <name>
+cando1 relay <key>              این سرور را رلهٔ آن کلید کن
 ```
 
 <div dir="rtl">
