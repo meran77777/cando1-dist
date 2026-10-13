@@ -172,6 +172,30 @@ cannot yet.
 | **WSS** | WebSocket over TLS — put the abroad server behind Cloudflare. |
 | **WS** | Plain WebSocket, for a CDN that terminates TLS. |
 | **TCP** | Raw TCP with obfuscation. Least overhead. |
+| **Mirage** | REALITY-style camouflage: the tunnel port is indistinguishable from a real HTTPS site to any scanner that lacks your key. Hardest to fingerprint. |
+
+## Mirage (REALITY-style camouflage)
+
+Mirage makes the server's tunnel port look like a real HTTPS website. A
+scanner that connects **without your key** is quietly forwarded to a real site
+(you choose which) and completes TLS with *that* site, seeing its genuine
+certificate — so there is nothing cando1-specific to detect or block. An
+authenticated client proves itself inside a normal, current-browser
+ClientHello and gets the tunnel.
+
+Set it up like any transport: **New tunnel → Mirage**, then pick a real,
+allowed, CDN-backed site to impersonate (e.g. `www.microsoft.com`). The key it
+prints carries everything the other server needs; import it there as usual.
+`cando1 mirage-keygen` prints a server key and a per-user short id if you want
+to build a config by hand.
+
+Honest limits (by design): mirage **cannot** un-block an IP that is already
+filtered at the IP level — move to a fresh, ideally CDN-fronted IP first. It
+hides *what* your traffic is from a scanner, not *how much* or *how long* you
+transfer. And the strongest form (presenting the real site's exact
+certificate) needs a patched TLS stack that is tracked as later work; today's
+form resists scanners that do not hold your client config. Per-user short ids
+keep a leaked key from burning more than one user.
 
 ## Speed, ping and stability
 
@@ -227,6 +251,7 @@ cando1 id                       print this server's id (for a license)
 cando1 license [add <key>]      show or install the license
 cando1 diag   [name]            diagnostics report (see below)
 cando1 relay <key> [--port N]   make this server a relay for that key
+cando1 mirage-keygen            print a mirage server key + short id
 cando1 run <name> | -c <file>   run in the foreground
 cando1 gen-token | version | help
 ```
@@ -386,6 +411,15 @@ cando1 import cando1://eyJtIjoicmV2ZXJzZSIs...
 - **WSS:** وب‌سوکت روی TLS؛ برای قرار دادن سرور خارج پشت کلادفلر.
 - **WS:** وب‌سوکت ساده، برای CDN ای که TLS را خودش انجام می‌دهد.
 - **TCP:** TCP خام با مبهم‌سازی؛ کمترین سربار.
+- **Mirage:** استتار به سبک REALITY؛ پورت تونل برای هر اسکنری که کلید شما را ندارد عیناً مثل یک سایت واقعی HTTPS دیده می‌شود. سخت‌ترین برای شناسایی.
+
+## میراژ (استتار سبک REALITY)
+
+میراژ کاری می‌کند که پورت تونل سرور، مثل یک سایت واقعی HTTPS دیده شود. هر اسکنری که **بدون کلید شما** وصل شود، بی‌سروصدا به یک سایت واقعی (که خودتان انتخاب می‌کنید) هدایت می‌شود و با همان سایت TLS کامل می‌کند و گواهی واقعی‌اش را می‌گیرد؛ پس چیزی مخصوص cando1 برای دیدن یا بستن وجود ندارد. کلاینت معتبر، خودش را داخل یک ClientHello عادیِ مرورگر اثبات می‌کند و تونل را می‌گیرد.
+
+راه‌اندازی مثل هر ترنسپورت دیگر: **New tunnel → Mirage**، بعد یک سایت واقعی، مجاز و پشت CDN را برای تقلید انتخاب کنید (مثلاً `www.microsoft.com`). کلیدی که چاپ می‌شود هر چیزی را که سرور دیگر لازم دارد در خود دارد؛ همان‌جا مثل همیشه import کنید. دستور `cando1 mirage-keygen` هم اگر بخواهید کانفیگ را دستی بسازید، کلید سرور و یک short_id می‌دهد.
+
+محدودیت‌های صادقانه (عمدی): میراژ **نمی‌تواند** آی‌پی‌ای را که در سطح IP فیلتر شده باز کند — اول باید روی آی‌پی تمیز و ترجیحاً پشت CDN بروید. میراژ «نوعِ» ترافیک را از اسکنر پنهان می‌کند، نه «حجم» و «مدت» آن را. و قوی‌ترین شکل آن (نمایش عین گواهی واقعی سایت) به یک لایهٔ TLS اصلاح‌شده نیاز دارد که کار بعدی است؛ شکل امروزی در برابر اسکنرهایی که کانفیگ کلاینت شما را ندارند مقاوم است. short_idِ جداگانهٔ هر کاربر باعث می‌شود نشت یک کلید، بیش از یک کاربر را نسوزاند.
 
 ## سرعت، پینگ و پایداری
 
@@ -411,6 +445,7 @@ cando1 status  <name>           پینگ، لینک‌ها، ترافیک
 cando1 start|stop|restart <name>
 cando1 logs    <name>
 cando1 relay <key>              این سرور را رلهٔ آن کلید کن
+cando1 mirage-keygen            چاپ کلید سرور mirage و short_id
 ```
 
 <div dir="rtl">
